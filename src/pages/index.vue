@@ -18,7 +18,7 @@
           </button>
         </div>
         <div class="homepage-nav">
-          <div><img src="../assets/head-portrait.jpg"></div>
+          <div><img src="/static/head-portrait.jpg"></div>
           <div>
             <div class="qq-name">岁月静好。</div>
             <div class="yellow-diamond-message">
@@ -98,7 +98,7 @@
           </div>
           <div class="small-talk" v-for="(item,index) in talkerList">
             <div class="talker-message">
-              <img src="../assets/head-portrait.jpg" class="talker-image">
+              <img src="/static/head-portrait.jpg" class="talker-image">
               <div class="talker-tips">
                 <div class="talker-name">岁月静好。</div>
                 <div>{{item.time}}</div>
@@ -128,11 +128,18 @@
             </div>
             <div class="specific-comments">
               <div class="comment">
-                <div class="reviewer-comment" v-for="comment in item.comment">
+                <div class="reviewer-comment" v-for="(comment,j) in item.comment">
                   <img :src="comment.pic">
                   <div class="comment-content">
-                    <div><span>{{comment.from}}</span> : {{comment.content}}</div>
-                    <div class="comment-time">{{comment.time}}</div>
+                    <div class="main-comment" @mouseover="hoverCommentArea(j)"
+                         @mouseout="leaveCommentArea(j)">
+                      <div class="comment-from"><span>{{comment.from}}</span> : {{comment.content}}</div>
+                      <div class="comment-time">{{comment.time}}</div>
+                      <div class="comment-operation" v-show="isCommentHover[j]">
+                        <img src="../assets/iconImage/comment.png">
+                        <img src="../assets/iconImage/delete.png" @click="deleteBigComemnt(index,j)">
+                      </div>
+                    </div>
                     <div class="reply-comments" v-for="(reply,i) in comment.reply">
                       <div class="reply-comments-image">
                         <img :src="reply.pic">
@@ -142,15 +149,16 @@
                         <div><span>{{reply.from}} </span>回复<span>{{reply.to}} </span>: {{reply.content}}</div>
                         <div class="reply-info">
                           <div class="comment-time">{{reply.time}}</div>
-                          <div class="comment-operation" v-show="isHover[i]">
-                            <img src="../assets/iconImage/comment.png" @click="clickComment">
-                            <img src="../assets/iconImage/delete.png" @click="deleteComemnt(index,i)">
+                          <div class="reply-comment-operation" v-show="isHover[i]">
+                            <img src="../assets/iconImage/comment.png">
+                            <img src="../assets/iconImage/delete.png" @click="deleteComemnt(index,j,i)">
                           </div>
                         </div>
-                        <div class="for-reply-comment" >
-                          <textarea placeholder="回复" class="comment-text" @click="clickComment" v-model="comment[index]"></textarea>
-                          <i class="iconfont icon-camera"></i>
-                        </div>
+                        <!--<div class="for-reply-comment">-->
+                          <!--<textarea placeholder="回复" class="comment-text" @click="clickComment"-->
+                                    <!--v-model="comment[index]"></textarea>-->
+                          <!--<i class="iconfont icon-camera"></i>-->
+                        <!--</div>-->
                       </div>
                     </div>
                   </div>
@@ -222,6 +230,7 @@
         isCommentClicked: false,
         isThumb: [],
         isHover: [],
+        isCommentHover: [],
         starIndex: [],
         comment: []
       }
@@ -267,16 +276,31 @@
       share() {
 
       },
-      deleteComemnt(talkerIndex,replyIndex) {
+      deleteComemnt(talkerIndex, commentIndex, replyIndex) {
         console.log(talkerIndex)
         console.log(replyIndex)
-        this.talkerList[talkerIndex].comment.splice(replyIndex,1)
+        console.log(this.talkerList[talkerIndex].comment[commentIndex].reply[replyIndex])
+        this.talkerList[talkerIndex].comment[commentIndex].reply.splice(replyIndex, 1)
+        setSmallTalks(this.talkerList[talkerIndex])
+      },
+      deleteBigComemnt(talkerIndex, commentIndex) {
+        console.log(talkerIndex)
+        console.log(commentIndex)
+        console.log(this.talkerList[talkerIndex].comment[commentIndex])
+        this.talkerList[talkerIndex].comment.splice(commentIndex, 1)
+        setSmallTalks(this.talkerList[talkerIndex])
       },
       hoverArea(index) {
-        this.$set(this.isHover,index,true)
+        this.$set(this.isHover, index, true)
       },
       leaveArea(index) {
-        this.$set(this.isHover,index,false)
+        this.$set(this.isHover, index, false)
+      },
+      hoverCommentArea(index) {
+        this.$set(this.isCommentHover, index, true)
+      },
+      leaveCommentArea(index) {
+        this.$set(this.isCommentHover, index, false)
       },
       resetStar(array, index) {
         this.likearr = []
@@ -306,7 +330,7 @@
           from: '岁月静好。',
           content: this.comment[index],
           time: time,
-          pic: "../assets/head-portrait.jpg"
+          pic: "/static/head-portrait.jpg"
         })
         setSmallTalks(this.talkerList[index])
         this.comment[index] = ''
@@ -849,11 +873,29 @@
               .comment-content {
                 padding-left: 10px;
                 margin-top: -3px;
+
+                .main-comment {
+                  display: flex;
+                  flex-wrap: wrap;
+                }
+
+                .comment-from {
+                  width: 100%;
+                }
                 span {
                   color: #cc8f14;
                 }
                 .comment-time {
                   color: #80796c;
+                }
+
+                .comment-operation {
+                  margin-left: 15px;
+                  margin-top: 3px;
+                  img {
+                    width: 15px;
+                    height: 15px;
+                  }
                 }
 
                 .reply-comments {
@@ -876,7 +918,7 @@
                       display: flex;
                     }
 
-                    .for-reply-comment{
+                    .for-reply-comment {
                       width: 500px;
                       .comment-text {
                         width: 480px;
@@ -896,7 +938,7 @@
                       padding-bottom: 10px;
                     }
 
-                    .comment-operation {
+                    .reply-comment-operation {
                       margin-left: 15px;
                       margin-top: 3px;
                       img {

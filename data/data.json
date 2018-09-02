@@ -54,15 +54,9 @@
       "comment": [
         {
           "from": "岁月静好。",
-          "content": "123123",
-          "time": "9月1日 20:10",
-          "pic": "../assets/head-portrait.jpg"
-        },
-        {
-          "from": "岁月静好。",
           "content": "123",
           "time": "9月1日 20:10",
-          "pic": "../assets/head-portrait.jpg"
+          "pic": "/static/head-portrait.jpg"
         }
       ],
       "isStar": false
@@ -71,7 +65,7 @@
       "id": 2,
       "time": "8月9日 22:16",
       "content": "喜欢一个人，始于共鸣，陷于才华，忠于人品。",
-      "pic": "static/small-talk/image2.jpg",
+      "pic": "/static/small-talk/image2.jpg",
       "equipment": "小米5s",
       "watchNumber": 101,
       "star": [
@@ -91,7 +85,7 @@
       "id": 3,
       "time": "7月20日 20:00",
       "content": "美图秀秀都盖不住的肉和痘痘",
-      "pic": "static/small-talk/image3.jpg",
+      "pic": "/static/small-talk/image3.jpg",
       "equipment": "小米5",
       "watchNumber": 140,
       "star": [
@@ -111,56 +105,49 @@
           "from": "aaa",
           "content": "还是肉明显，别打我",
           "time": "7月20日 20:00",
-          "pic": "static/reviewer/image1.jpg",
+          "pic": "/static/reviewer/image1.jpg",
           "reply": [
             {
               "from": "岁月静好。",
               "to": "aaa",
               "content": "我也很无奈啊",
               "time": "7月20日 20:01",
-              "pic": "../assets/head-portrait.jpg"
+              "pic": "/static/head-portrait.jpg"
             },
             {
               "from": "aaa",
               "to": "岁月静好。",
               "content": "不是要早起爬山的人吗",
               "time": "7月20日 20:01",
-              "pic": "static/reviewer/image1.jpg"
+              "pic": "/static/reviewer/image1.jpg"
             },
             {
               "from": "岁月静好。",
               "to": "aaa",
               "content": "爬不起来了",
               "time": "7月20日 20:01",
-              "pic": "../assets/head-portrait.jpg"
+              "pic": "/static/head-portrait.jpg"
             },
             {
               "from": "岁月静好。",
               "to": "aaa",
               "content": "有啥快速瘦脸的方法么",
               "time": "7月20日 20:01",
-              "pic": "../assets/head-portrait.jpg"
-            },
-            {
-              "from": "aaa",
-              "to": "岁月静好。",
-              "content": "不瞒你说，我也好几天没跑步了，这种天气怕是要中暑",
-              "time": "7月20日 20:02",
-              "pic": "static/reviewer/image1.jpg"
+              "pic": "/static/head-portrait.jpg"
             },
             {
               "from": "岁月静好。",
               "to": "aaa",
               "content": "早起爬山中暑应该不至于就是起不来",
               "time": "7月20日 20:02",
-              "pic": "../assets/head-portrait.jpg"
+              "pic": "/static/head-portrait.jpg"
             },
             {
               "from": "aaa",
               "to": "岁月静好。",
               "content": "…捏一捏",
               "time": "7月20日 20:03",
-              "pic": "static/reviewer/image1.jpg"
+              "pic": "/static/reviewer/image1.jpg"
             }
           ]
         },
@@ -168,14 +155,14 @@
           "from": "bbbb",
           "content": "痘痘在哪",
           "time": "7月20日 21:56",
-          "pic": "static/reviewer/image2.jpg",
+          "pic": "/static/reviewer/image2.jpg",
           "reply": [
             {
               "from": "岁月静好。",
               "to": "bbbb",
               "content": "额头上超多",
               "time": "7月20日 21:59",
-              "pic": "../assets/head-portrait.jpg"
+              "pic": "/static/head-portrait.jpg"
             }
           ]
         },
@@ -183,14 +170,14 @@
           "from": "cccc",
           "content": "跑什么步，瘦什么脸。还是好好学p图吧",
           "time": "7月20日 21:57",
-          "pic": "static/reviewer/image3.jpg",
+          "pic": "/static/reviewer/image3.jpg",
           "reply": [
             {
               "from": "岁月静好。",
               "to": "cccc",
               "content": "道理是有的",
               "time": "7月20日 21:59",
-              "pic": "../assets/head-portrait.jpg"
+              "pic": "/static/head-portrait.jpg"
             }
           ]
         },
@@ -198,7 +185,7 @@
           "from": "dddd",
           "content": "减肥太难，下学期再继续，暑假就算了",
           "time": "7月21日 11:35",
-          "pic": "static/reviewer/image4.jpg"
+          "pic": "/static/reviewer/image4.jpg"
         }
       ]
     }
