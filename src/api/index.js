@@ -9,3 +9,7 @@ export function getPeople() {
 export function getSmallTalks() {
   return axios.get(`${HOST}/smalltalks`)
 };
+
+export function setSmallTalks(data) {
+  return axios.put(`${HOST}/smalltalks/${data.id}`, data)
+}

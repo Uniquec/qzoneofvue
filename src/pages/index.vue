@@ -111,34 +111,54 @@
               <div class="mobile-logo"><i class="iconfont icon-p-shouji"></i>来自 {{item.equipment}}</div>
             </div>
             <div class="talk-message">
-              <div class="looks-people">浏览{{item.watchNumber}}次<i class="iconfont icon-dianzan1"></i><i
-                class="iconfont icon-comment"></i><i class="iconfont icon-share"></i></div>
+              <div class="looks-people">
+                浏览{{item.watchNumber}}次
+                <div class="more-operation">
+                  <img src="../assets/iconImage/thumb.png" @click="dianzan(index)" v-if="!isThumb[index]">
+                  <img src="../assets/iconImage/thumb1.png" @click="dianzan(index)" v-if="isThumb[index]">
+                  <img src="../assets/iconImage/comment.png" @click="clickComment">
+                  <img src="../assets/iconImage/share.png" @click="share">
+                </div>
+              </div>
               <div class="grey-line"></div>
               <div class="likes-people">
                 <div class="icon-bgc"><i class="iconfont icon-dianzan1"></i></div>
                 <div class="likes-name">{{likesarr[index].names}}{{likesarr[index].text}}{{item.starNumber}}人觉得很赞</div>
               </div>
             </div>
-            <div class="comment">
-              <div class="reviewer-comment" v-for="comment in item.comment">
-                <img :src="comment.pic">
-                <div class="comment-content">
-                  <div><span>{{comment.from}}</span> : {{comment.content}}</div>
-                  <div class="comment-time">{{comment.time}}</div>
-                  <div class="reply-comments" v-for="reply in comment.reply">
-                    <div class="reply-comments-image">
-                      <img :src="reply.pic">
-                    </div>
-                    <div class="reply-comments-content">
-                      <div><span>{{reply.from}} </span>回复<span>{{reply.to}} </span>: {{reply.content}}</div>
-                      <div class="comment-time">{{reply.time}}</div>
+            <div class="specific-comments">
+              <div class="comment">
+                <div class="reviewer-comment" v-for="comment in item.comment">
+                  <img :src="comment.pic">
+                  <div class="comment-content">
+                    <div><span>{{comment.from}}</span> : {{comment.content}}</div>
+                    <div class="comment-time">{{comment.time}}</div>
+                    <div class="reply-comments" v-for="(reply,i) in comment.reply">
+                      <div class="reply-comments-image">
+                        <img :src="reply.pic">
+                      </div>
+                      <div class="reply-comments-content" @mouseover="hoverArea(i)"
+                           @mouseout="leaveArea(i)">
+                        <div><span>{{reply.from}} </span>回复<span>{{reply.to}} </span>: {{reply.content}}</div>
+                        <div class="reply-info">
+                          <div class="comment-time">{{reply.time}}</div>
+                          <div class="comment-operation" v-show="isHover[i]">
+                            <img src="../assets/iconImage/comment.png" @click="clickComment">
+                            <img src="../assets/iconImage/delete.png" @click="deleteComemnt(index,i)">
+                          </div>
+                        </div>
+                        <div class="for-reply-comment" >
+                          <textarea placeholder="回复" class="comment-text" @click="clickComment" v-model="comment[index]"></textarea>
+                          <i class="iconfont icon-camera"></i>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="talk-comment">
-              <textarea placeholder="评论" class="comment-text" @click="clickComment"></textarea>
+              <textarea placeholder="评论" class="comment-text" @click="clickComment" v-model="comment[index]"></textarea>
               <i class="iconfont icon-camera"></i>
             </div>
             <div class="publish-comment" v-if="isCommentClicked">
@@ -150,7 +170,7 @@
               <div class="white-circle"></div>
               <div class="private-comment">私密评论</div>
               <i class="iconfont icon-diamonds"></i>
-              <button>发表</button>
+              <button @click="publishComment(index)">发表</button>
             </div>
           </div>
         </div>
@@ -190,7 +210,7 @@
 
 <script>
   import TopBar from '../components/TopBar.vue'
-  import {getPeople, getSmallTalks} from '../api'
+  import {getPeople, getSmallTalks, setSmallTalks} from '../api'
 
   export default {
     name: 'QZone',
@@ -199,37 +219,98 @@
         list: [],
         talkerList: [],
         likesarr: [],
-        isCommentClicked: false
+        isCommentClicked: false,
+        isThumb: [],
+        isHover: [],
+        starIndex: [],
+        comment: []
       }
     },
     created() {
       getPeople()
         .then(d => d.data)
         .then(people => {
-          console.log(people);
           this.list = people
         });
       getSmallTalks()
         .then(d => d.data)
         .then(smalltalk => {
-          console.log(smalltalk);
           this.talkerList = smalltalk
-          let arr = []
-          let s = ''
           for (let i = 0; i < smalltalk.length; i++) {
-            arr = smalltalk[i].star.join('、')
-            s = smalltalk[i].starNumber === smalltalk[i].star.length ? '共' : '等'
-            this.likesarr.push({
-              names: arr,
-              text: s
-            })
+            this.resetStar(smalltalk[i], i)
           }
-          console.log(this.likesarr)
         })
     },
     methods: {
-      clickComment(){
+      clickComment() {
         this.isCommentClicked = true
+      },
+      dianzan(index) {
+        this.isThumb[index] = !this.isThumb[index]
+        if (this.isThumb[index]) {
+          this.talkerList[index].star.push('岁月静好。')
+          this.talkerList[index].starNumber++
+          this.talkerList[index].isStar = true
+          this.resetStar(this.talkerList[index], index)
+          setSmallTalks(this.talkerList[index])
+        } else {
+          console.log(index)
+          this.talkerList[index].star.splice(this.starIndex[index], 1)
+          this.talkerList[index].starNumber--
+          this.talkerList[index].isStar = false
+          this.resetStar(this.talkerList[index], index)
+          setSmallTalks(this.talkerList[index])
+          console.log(this.talkerList[index].star)
+        }
+
+      },
+      share() {
+
+      },
+      deleteComemnt(talkerIndex,replyIndex) {
+        console.log(talkerIndex)
+        console.log(replyIndex)
+        this.talkerList[talkerIndex].comment.splice(replyIndex,1)
+      },
+      hoverArea(index) {
+        this.$set(this.isHover,index,true)
+      },
+      leaveArea(index) {
+        this.$set(this.isHover,index,false)
+      },
+      resetStar(array, index) {
+        this.likearr = []
+        let arr = []
+        let s = ''
+        arr = array.star.join('、')
+        s = array.starNumber === array.star.length ? '共' : '等'
+        this.likesarr[index] = {
+          names: arr,
+          text: s
+        }
+        for (let j = 0; j < array.star.length; j++) {
+          if (array.star[j] === '岁月静好。') {
+            this.isThumb[index] = true
+            this.starIndex[index] = j
+          }
+        }
+      },
+      publishComment(index) {
+        let date = new Date()
+        let month = date.getMonth() + 1
+        let day = date.getDate()
+        let hour = date.getHours() >= 10 ? date.getHours() : '0' + date.getHours()
+        let minute = date.getMinutes() >= 10 ? date.getMinutes() : '0' + date.getMinutes()
+        let time = month + '月' + day + '日 ' + hour + ':' + minute
+        this.talkerList[index].comment.push({
+          from: '岁月静好。',
+          content: this.comment[index],
+          time: time,
+          pic: "../assets/head-portrait.jpg"
+        })
+        setSmallTalks(this.talkerList[index])
+        this.comment[index] = ''
+        console.log(this.talkerList[index].comment)
       }
     },
     components: {
@@ -540,6 +621,7 @@
         border: 1px solid #ebe3bc;
         background-color: #fffcf4;
         margin-top: 15px;
+        padding-bottom: 10px;
         border-radius: 3px;
         div:first-child {
           height: 40px;
@@ -562,7 +644,6 @@
           width: 85%;
           margin: auto;
           padding-top: 10px;
-
         }
         .icon-menu, .icon-xiexing {
           color: #b2aa9b;
@@ -576,6 +657,7 @@
         background-color: #fffcf4;
         margin-top: 15px;
         border-radius: 3px;
+        padding-bottom: 25px;
         .visitors-title {
           height: 40px;
           background-color: #faf7e6;
@@ -590,11 +672,12 @@
             flex-wrap: wrap;
             width: 99%;
             margin: auto;
+            padding-left: 5px;
             .image-square {
               margin-right: 5px;
               img {
-                width: 95px;
-                height: 95px;
+                width: 100px;
+                height: 100px;
                 margin: auto;
                 padding-top: -5px;
               }
@@ -603,7 +686,7 @@
                 z-index: 10;
                 top: -20px;
                 padding-left: 5px;
-                width: 90px;
+                width: 95px;
                 height: 20px;
                 background-color: rgba(0, 0, 0, 0.5);
                 color: #FFFFFF;
@@ -708,18 +791,18 @@
         }
 
         .talk-message {
-          width: 615px;
           padding-left: 20px;
           padding-top: 20px;
           .looks-people {
+            padding-right: 15px;
+            display: flex;
+            justify-content: space-between;
             font-size: 15px;
-            .icon-dianzan1, .icon-comment, .icon-share {
-              color: #a69d8d;
-              font-size: 28px;
-              padding-left: 2em;
-            }
-            .icon-dianzan1 {
-              padding-left: 11em;
+
+            .more-operation {
+              img {
+                padding-left: 2em;
+              }
             }
           }
           .grey-line {
@@ -750,13 +833,14 @@
             }
           }
         }
+
         .specific-comments {
-          width: 615px;
           padding-left: 20px;
           padding-top: 20px;
           .comment {
             .reviewer-comment {
               display: flex;
+              margin-bottom: 10px;
               img {
                 width: 30px;
                 height: 30px;
@@ -771,37 +855,63 @@
                 .comment-time {
                   color: #80796c;
                 }
+
+                .reply-comments {
+                  display: flex;
+                  .reply-comments-image {
+                    img {
+                      width: 30px;
+                      height: 30px;
+                      border-radius: 50%;
+                      margin-top: 10px;
+                    }
+                  }
+                  .reply-comments-content {
+                    padding: 10px 10px 0;
+                    span {
+                      color: #cc8f14;
+                    }
+
+                    .reply-info {
+                      display: flex;
+                    }
+
+                    .for-reply-comment{
+                      width: 500px;
+                      .comment-text {
+                        width: 480px;
+                        height: 40px;
+                        border: 1px solid #ede8d1;
+                        background-color: #fffcf4;
+                      }
+                      ::-webkit-input-placeholder {
+                        padding-left: 10px;
+                        padding-top: 8px;
+                      }
+                    }
+
+                    .comment-time {
+                      color: #80796c;
+                      font-size: 14px;
+                      padding-bottom: 10px;
+                    }
+
+                    .comment-operation {
+                      margin-left: 15px;
+                      margin-top: 3px;
+                      img {
+                        width: 15px;
+                        height: 15px;
+                      }
+                    }
+                  }
+                }
+
               }
             }
           }
         }
-        .reply-comments {
-          width: 615px;
-          display: flex;
-          flex-wrap: wrap;
-          .reply-comments-image {
-            width: 65px;
-            padding-left: 35px;
-            img {
-              width: 30px;
-              height: 30px;
-              border-radius: 50%;
-              margin-top: 10px;
-            }
-          }
-          .reply-comments-content {
-            width: 550px;
-            padding-top: 10px;
-            padding-left: 10px;
-            span {
-              color: #cc8f14;
-            }
-            .comment-time {
-              color: #80796c;
-              padding-bottom: 10px;
-            }
-          }
-        }
+
         .talk-comment {
           width: 615px;
           padding-left: 20px;
